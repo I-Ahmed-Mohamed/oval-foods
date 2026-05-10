@@ -1,116 +1,24 @@
 
-const state={productQuery:"",productFilter:"all",clientQuery:"",locationQuery:"",locationFilter:"all",opened:new Set(),favorites:new Set(JSON.parse(localStorage.getItem("oval_favorites_v4")||"[]")),recent:JSON.parse(localStorage.getItem("oval_recent_v4")||"[]")};
+const state={productQuery:"",productFilter:"all",clientQuery:"",locationQuery:"",locationFilter:"all",opened:new Set(),favorites:new Set(JSON.parse(localStorage.getItem("oval_favorites_publish")||"[]")),recent:JSON.parse(localStorage.getItem("oval_recent_publish")||"[]")};
 const $=s=>document.querySelector(s);
 function normalize(t){return String(t||"").toLowerCase().replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/[ًٌٍَُِّْ]/g,"").trim()}
 function keyOf(c,b){return`${c}__${b.code||""}__${b.name||""}`}
 function toast(m){const e=$("#toast");if(!e)return;e.textContent=m;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),1800)}
-function saveFav(){localStorage.setItem("oval_favorites_v4",JSON.stringify([...state.favorites]))}
-function saveRecent(i){state.recent=[i,...state.recent.filter(x=>x.key!==i.key)].slice(0,18);localStorage.setItem("oval_recent_v4",JSON.stringify(state.recent))}
+function saveFav(){localStorage.setItem("oval_favorites_publish",JSON.stringify([...state.favorites]))}
+function saveRecent(i){state.recent=[i,...state.recent.filter(x=>x.key!==i.key)].slice(0,18);localStorage.setItem("oval_recent_publish",JSON.stringify(state.recent))}
 function highlight(t,q){if(!q)return t||"";const s=q.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return String(t||"").replace(new RegExp(s,"gi"),m=>`<mark>${m}</mark>`)}
 
-function renderProductChips(){
-  const w=$("#productChips");if(!w)return;
-  const groups=["all",...new Set(PRODUCTS_DATA.map(p=>p.group))];
-  w.innerHTML=groups.map(g=>`<button class="${state.productFilter===g?"active":""}" data-product-filter="${g}" type="button">${g==="all"?"الكل":g}</button>`).join("")
-}
-function renderProducts(){
-  const grid=$("#productsGrid");if(!grid)return;
-  const q=normalize(state.productQuery);
-  const list=PRODUCTS_DATA.filter(p=>(state.productFilter==="all"||p.group===state.productFilter)&&(!q||normalize([p.name,p.group,p.color,p.desc].join(" ")).includes(q)));
-  grid.innerHTML=list.map(p=>`<article class="product-card reveal show" data-open-image="${p.image}" data-image-title="${p.name}">
-    <div class="product-media"><img src="${p.image}" alt="${p.name}"></div>
-    <div class="product-body"><span class="tag">${p.group} • ${p.color}</span><h3>${highlight(p.name,state.productQuery)}</h3><p>${p.desc}</p><div class="open-hint">اضغط لعرض الصورة</div></div>
-  </article>`).join("");
-  const empty=$("#productsEmpty");if(empty)empty.hidden=list.length>0
-}
-function renderClients(){
-  const grid=$("#clientsGrid");if(!grid)return;
-  const q=normalize(state.clientQuery);
-  const list=CLIENTS_DATA.filter(c=>!q||normalize(c.client).includes(q));
-  grid.innerHTML=list.map(c=>`<article class="client-card reveal show">
-    <span class="client-logo">${c.logo?`<img src="${c.logo}" alt="${c.client}">`:c.client.slice(0,1)}</span>
-    <div><h3>${highlight(c.client,state.clientQuery)}</h3><p>${(c.branches||[]).length} فرع / لوكيشن</p><a href="locations.html?client=${encodeURIComponent(c.client)}">عرض الفروع</a></div>
-  </article>`).join("");
-  const empty=$("#clientsEmpty");if(empty)empty.hidden=list.length>0
-}
-function buildLocationFilters(){
-  const w=$("#locationFilters");if(!w)return;
-  const r=new Set(["all","favorites","recent"]);
-  CLIENTS_DATA.forEach(c=>{if(!c.type||r.has(c.type)||w.querySelector(`[data-filter="${c.type}"]`))return;const b=document.createElement("button");b.type="button";b.dataset.filter=c.type;b.textContent=c.client;w.appendChild(b)})
-}
-function getFilteredLocations(){
-  const q=normalize(state.locationQuery);
-  return CLIENTS_DATA.map(c=>{
-    let branches=(c.branches||[]).filter(b=>{
-      const k=keyOf(c.client,b),hay=normalize([c.client,c.type,b.code,b.name,b.area,b.address].join(" "));
-      return(!q||hay.includes(q))&&(state.locationFilter==="all"||state.locationFilter===c.type||(state.locationFilter==="favorites"&&state.favorites.has(k))||(state.locationFilter==="recent"&&state.recent.some(x=>x.key===k)))
-    });
-    if(q&&normalize(c.client).includes(q)&&(state.locationFilter==="all"||state.locationFilter===c.type))branches=c.branches||[];
-    return{...c,branches}
-  }).filter(c=>c.branches.length)
-}
-function renderLocations(){
-  const grid=$("#companiesGrid");if(!grid)return;
-  const data=getFilteredLocations(),bc=data.reduce((s,c)=>s+c.branches.length,0);
-  if($("#shownClients"))$("#shownClients").textContent=data.length;
-  if($("#shownBranches"))$("#shownBranches").textContent=bc;
-  if($("#favoriteCount"))$("#favoriteCount").textContent=state.favorites.size;
-  const empty=$("#locationsEmpty");if(empty)empty.hidden=data.length>0;
-  grid.innerHTML=data.map(c=>{
-    const open=!!state.locationQuery||state.opened.has(c.client)||state.locationFilter!=="all";
-    return`<article class="company-card ${open?"open":""}">
-      <button class="company-head" type="button" data-toggle="${c.client}">
-        <span class="company-title"><span class="company-icon">${c.logo?`<img src="${c.logo}" alt="${c.client}">`:c.client.slice(0,1)}</span><span><strong>${highlight(c.client,state.locationQuery)}</strong><small>عميل توزيع</small></span></span>
-        <span class="company-count">${c.branches.length} فرع ⌄</span>
-      </button>
-      <div class="branch-list">${c.branches.map(b=>{
-        const k=keyOf(c.client,b),fav=state.favorites.has(k),map=b.map||b.link||"#",area=b.area||b.address||"غير محدد",code=b.code||"بدون كود";
-        return`<div class="branch-item"><div class="branch-info"><div class="branch-name"><span>${highlight(b.name,state.locationQuery)}</span><b class="branch-code">${highlight(code,state.locationQuery)}</b></div><div class="branch-meta"><span>${highlight(area,state.locationQuery)}</span><span>${highlight(c.client,state.locationQuery)}</span></div></div><div class="branch-actions"><a class="map-btn" href="${map}" target="_blank" rel="noopener" data-map="1" data-key="${k}" data-client="${c.client}" data-name="${b.name}" data-code="${code}" data-area="${area}" data-url="${map}">فتح اللوكيشن</a><button class="copy-btn" type="button" data-copy="${c.client} | ${b.name} | ${code} | ${area} | ${map}">⧉</button><button class="fav-btn ${fav?"active":""}" type="button" data-fav="${k}">★</button></div></div>`
-      }).join("")}</div>
-    </article>`
-  }).join("")
-}
+function renderProductChips(){const w=$("#productChips");if(!w)return;const groups=["all",...new Set(PRODUCTS_DATA.map(p=>p.group))];w.innerHTML=groups.map(g=>`<button class="${state.productFilter===g?"active":""}" data-product-filter="${g}" type="button">${g==="all"?"الكل":g}</button>`).join("")}
+function renderProducts(){const grid=$("#productsGrid");if(!grid)return;const q=normalize(state.productQuery);const list=PRODUCTS_DATA.filter(p=>(state.productFilter==="all"||p.group===state.productFilter)&&(!q||normalize([p.name,p.group,p.color,p.desc].join(" ")).includes(q)));grid.innerHTML=list.map(p=>`<article class="product-card reveal show" data-open-image="${p.image}" data-image-title="${p.name}"><div class="product-media"><img src="${p.image}" alt="${p.name}"></div><div class="product-body"><span class="tag">${p.group} • ${p.color}</span><h3>${highlight(p.name,state.productQuery)}</h3><p>${p.desc}</p><div class="open-hint">اضغط لعرض الصورة</div></div></article>`).join("");const empty=$("#productsEmpty");if(empty)empty.hidden=list.length>0}
+function renderClients(){const grid=$("#clientsGrid");if(!grid)return;const q=normalize(state.clientQuery);const list=CLIENTS_DATA.filter(c=>!q||normalize(c.client).includes(q));grid.innerHTML=list.map(c=>`<article class="client-card reveal show"><span class="client-logo">${c.logo?`<img src="${c.logo}" alt="${c.client}">`:c.client.slice(0,1)}</span><div><h3>${highlight(c.client,state.clientQuery)}</h3><p>${(c.branches||[]).length} فرع / لوكيشن</p><a href="locations.html?client=${encodeURIComponent(c.client)}">عرض الفروع</a></div></article>`).join("");const empty=$("#clientsEmpty");if(empty)empty.hidden=list.length>0}
+function buildLocationFilters(){const w=$("#locationFilters");if(!w)return;const r=new Set(["all","favorites","recent"]);CLIENTS_DATA.forEach(c=>{if(!c.type||r.has(c.type)||w.querySelector(`[data-filter="${c.type}"]`))return;const b=document.createElement("button");b.type="button";b.dataset.filter=c.type;b.textContent=c.client;w.appendChild(b)})}
+function getFilteredLocations(){const q=normalize(state.locationQuery);return CLIENTS_DATA.map(c=>{let branches=(c.branches||[]).filter(b=>{const k=keyOf(c.client,b),hay=normalize([c.client,c.type,b.code,b.name,b.area,b.address].join(" "));return(!q||hay.includes(q))&&(state.locationFilter==="all"||state.locationFilter===c.type||(state.locationFilter==="favorites"&&state.favorites.has(k))||(state.locationFilter==="recent"&&state.recent.some(x=>x.key===k)))});if(q&&normalize(c.client).includes(q)&&(state.locationFilter==="all"||state.locationFilter===c.type))branches=c.branches||[];return{...c,branches}}).filter(c=>c.branches.length)}
+function renderLocations(){const grid=$("#companiesGrid");if(!grid)return;const data=getFilteredLocations(),bc=data.reduce((s,c)=>s+c.branches.length,0);if($("#shownClients"))$("#shownClients").textContent=data.length;if($("#shownBranches"))$("#shownBranches").textContent=bc;if($("#favoriteCount"))$("#favoriteCount").textContent=state.favorites.size;const empty=$("#locationsEmpty");if(empty)empty.hidden=data.length>0;grid.innerHTML=data.map(c=>{const open=!!state.locationQuery||state.opened.has(c.client)||state.locationFilter!=="all";return`<article class="company-card ${open?"open":""}"><button class="company-head" type="button" data-toggle="${c.client}"><span class="company-title"><span class="company-icon">${c.logo?`<img src="${c.logo}" alt="${c.client}">`:c.client.slice(0,1)}</span><span><strong>${highlight(c.client,state.locationQuery)}</strong><small>عميل توزيع</small></span></span><span class="company-count">${c.branches.length} فرع ⌄</span></button><div class="branch-list">${c.branches.map(b=>{const k=keyOf(c.client,b),fav=state.favorites.has(k),map=b.map||b.link||"#",area=b.area||b.address||"غير محدد",code=b.code||"بدون كود";return`<div class="branch-item"><div class="branch-info"><div class="branch-name"><span>${highlight(b.name,state.locationQuery)}</span><b class="branch-code">${highlight(code,state.locationQuery)}</b></div><div class="branch-meta"><span>${highlight(area,state.locationQuery)}</span><span>${highlight(c.client,state.locationQuery)}</span></div></div><div class="branch-actions"><a class="map-btn" href="${map}" target="_blank" rel="noopener" data-map="1" data-key="${k}" data-client="${c.client}" data-name="${b.name}" data-code="${code}" data-area="${area}" data-url="${map}">فتح اللوكيشن</a><button class="copy-btn" type="button" data-copy="${c.client} | ${b.name} | ${code} | ${area} | ${map}">⧉</button><button class="fav-btn ${fav?"active":""}" type="button" data-fav="${k}">★</button></div></div>`}).join("")}</div></article>`}).join("")}
 
-document.addEventListener("input",e=>{
-  if(e.target.id==="productSearch"){state.productQuery=e.target.value;renderProducts()}
-  if(e.target.id==="clientSearch"){state.clientQuery=e.target.value;renderClients()}
-  if(e.target.id==="locationSearch"){state.locationQuery=e.target.value;renderLocations()}
-});
-document.addEventListener("click",async e=>{
-  const img=e.target.closest("[data-open-image]");
-  if(img){const m=$("#imageModal"),mi=$("#modalImage"),mc=$("#modalCaption");if(m&&mi){mi.src=img.dataset.openImage;mi.alt=img.dataset.imageTitle||"";mc.textContent=img.dataset.imageTitle||"";m.showModal()}return}
-  if(e.target.id==="modalClose"||e.target.id==="imageModal"){const m=$("#imageModal");if(m)m.close();return}
-  const pf=e.target.closest("[data-product-filter]");
-  if(pf){state.productFilter=pf.dataset.productFilter;renderProductChips();renderProducts();return}
-  if(e.target.id==="clearProductSearch"){const i=$("#productSearch");i.value="";state.productQuery="";renderProducts();i.focus();return}
-  if(e.target.id==="clearClientSearch"){const i=$("#clientSearch");i.value="";state.clientQuery="";renderClients();i.focus();return}
-  if(e.target.id==="clearLocationSearch"){const i=$("#locationSearch");i.value="";state.locationQuery="";renderLocations();i.focus();return}
-  const t=e.target.closest("[data-toggle]");
-  if(t){const n=t.dataset.toggle;state.opened.has(n)?state.opened.delete(n):state.opened.add(n);renderLocations();return}
-  const f=e.target.closest("[data-filter]");
-  if(f){document.querySelectorAll("[data-filter]").forEach(b=>b.classList.remove("active"));f.classList.add("active");state.locationFilter=f.dataset.filter;renderLocations();return}
-  const fav=e.target.closest("[data-fav]");
-  if(fav){const k=fav.dataset.fav;state.favorites.has(k)?state.favorites.delete(k):state.favorites.add(k);saveFav();renderLocations();toast(state.favorites.has(k)?"اتضاف للمفضلة":"اتشال من المفضلة");return}
-  const copy=e.target.closest("[data-copy]");
-  if(copy){await navigator.clipboard.writeText(copy.dataset.copy);toast("تم نسخ بيانات الفرع");return}
-  const map=e.target.closest("[data-map]");
-  if(map)saveRecent({key:map.dataset.key,client:map.dataset.client,name:map.dataset.name,code:map.dataset.code,area:map.dataset.area,url:map.dataset.url})
-});
-const params=new URLSearchParams(location.search);
-if(params.get("client")){state.locationQuery=params.get("client");const loc=$("#locationSearch");if(loc)loc.value=state.locationQuery}
-const th=localStorage.getItem("oval_theme_v4")||"dark";
-document.documentElement.dataset.theme=th;
-if($("#themeToggle"))$("#themeToggle").textContent=th==="light"?"☀":"☾";
-if($("#themeToggle"))$("#themeToggle").addEventListener("click",()=>{const n=document.documentElement.dataset.theme==="light"?"dark":"light";document.documentElement.dataset.theme=n;localStorage.setItem("oval_theme_v4",n);$("#themeToggle").textContent=n==="light"?"☀":"☾"});
-const backTop=$("#backTop");
-if(backTop){window.addEventListener("scroll",()=>backTop.classList.toggle("show",window.scrollY>520));backTop.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}))}
+document.addEventListener("input",e=>{if(e.target.id==="productSearch"){state.productQuery=e.target.value;renderProducts()}if(e.target.id==="clientSearch"){state.clientQuery=e.target.value;renderClients()}if(e.target.id==="locationSearch"){state.locationQuery=e.target.value;renderLocations()}});
+document.addEventListener("click",async e=>{const img=e.target.closest("[data-open-image]");if(img){const m=$("#imageModal"),mi=$("#modalImage"),mc=$("#modalCaption");if(m&&mi){mi.src=img.dataset.openImage;mi.alt=img.dataset.imageTitle||"";mc.textContent=img.dataset.imageTitle||"";m.showModal()}return}if(e.target.id==="modalClose"||e.target.id==="imageModal"){const m=$("#imageModal");if(m)m.close();return}const pf=e.target.closest("[data-product-filter]");if(pf){state.productFilter=pf.dataset.productFilter;renderProductChips();renderProducts();return}if(e.target.id==="clearProductSearch"){const i=$("#productSearch");i.value="";state.productQuery="";renderProducts();i.focus();return}if(e.target.id==="clearClientSearch"){const i=$("#clientSearch");i.value="";state.clientQuery="";renderClients();i.focus();return}if(e.target.id==="clearLocationSearch"){const i=$("#locationSearch");i.value="";state.locationQuery="";renderLocations();i.focus();return}const t=e.target.closest("[data-toggle]");if(t){const n=t.dataset.toggle;state.opened.has(n)?state.opened.delete(n):state.opened.add(n);renderLocations();return}const f=e.target.closest("[data-filter]");if(f){document.querySelectorAll("[data-filter]").forEach(b=>b.classList.remove("active"));f.classList.add("active");state.locationFilter=f.dataset.filter;renderLocations();return}const fav=e.target.closest("[data-fav]");if(fav){const k=fav.dataset.fav;state.favorites.has(k)?state.favorites.delete(k):state.favorites.add(k);saveFav();renderLocations();toast(state.favorites.has(k)?"اتضاف للمفضلة":"اتشال من المفضلة");return}const copy=e.target.closest("[data-copy]");if(copy){await navigator.clipboard.writeText(copy.dataset.copy);toast("تم نسخ بيانات الفرع");return}const map=e.target.closest("[data-map]");if(map)saveRecent({key:map.dataset.key,client:map.dataset.client,name:map.dataset.name,code:map.dataset.code,area:map.dataset.area,url:map.dataset.url})});
+const params=new URLSearchParams(location.search);if(params.get("client")){state.locationQuery=params.get("client");const loc=$("#locationSearch");if(loc)loc.value=state.locationQuery}
+const th=localStorage.getItem("oval_theme_publish")||"dark";document.documentElement.dataset.theme=th;if($("#themeToggle"))$("#themeToggle").textContent=th==="light"?"☀":"☾";if($("#themeToggle"))$("#themeToggle").addEventListener("click",()=>{const n=document.documentElement.dataset.theme==="light"?"dark":"light";document.documentElement.dataset.theme=n;localStorage.setItem("oval_theme_publish",n);$("#themeToggle").textContent=n==="light"?"☀":"☾"});
+const backTop=$("#backTop");if(backTop){window.addEventListener("scroll",()=>backTop.classList.toggle("show",window.scrollY>520));backTop.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}))}
 function reveal(){const obs=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add("show");obs.unobserve(en.target)}}),{threshold:.12});document.querySelectorAll(".reveal").forEach(el=>obs.observe(el))}
 renderProductChips();renderProducts();renderClients();buildLocationFilters();renderLocations();reveal();
-
-
-const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-const mainNav = document.querySelector(".main-nav");
-if(mobileMenuBtn && mainNav){
-  mobileMenuBtn.addEventListener("click", () => mainNav.classList.toggle("open"));
-  mainNav.querySelectorAll("a").forEach(a => a.addEventListener("click", () => mainNav.classList.remove("open")));
-}
