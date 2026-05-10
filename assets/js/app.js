@@ -106,3 +106,11 @@ const backTop=$("#backTop");
 if(backTop){window.addEventListener("scroll",()=>backTop.classList.toggle("show",window.scrollY>520));backTop.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}))}
 function reveal(){const obs=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add("show");obs.unobserve(en.target)}}),{threshold:.12});document.querySelectorAll(".reveal").forEach(el=>obs.observe(el))}
 renderProductChips();renderProducts();renderClients();buildLocationFilters();renderLocations();reveal();
+
+
+const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+const mainNav = document.querySelector(".main-nav");
+if(mobileMenuBtn && mainNav){
+  mobileMenuBtn.addEventListener("click", () => mainNav.classList.toggle("open"));
+  mainNav.querySelectorAll("a").forEach(a => a.addEventListener("click", () => mainNav.classList.remove("open")));
+}
