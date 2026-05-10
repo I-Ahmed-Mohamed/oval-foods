@@ -1,4 +1,167 @@
-const LOCATIONS_DATA = [
+const PRODUCTS_DATA = [
+  {
+    "id": "عبوه-6-ابيض",
+    "name": "عبوة ٦ أبيض",
+    "group": "عبوة ٦",
+    "color": "أبيض",
+    "image": "assets/images/عبوه 6 ابيض.jpg",
+    "desc": "عبوة ٦ - أبيض بتغليف منظم وشكل مناسب للعرض داخل المنافذ."
+  },
+  {
+    "id": "عبوه-6-احمر",
+    "name": "عبوة ٦ أحمر",
+    "group": "عبوة ٦",
+    "color": "أحمر",
+    "image": "assets/images/عبوه 6 احمر.jpg",
+    "desc": "عبوة ٦ - أحمر بتغليف منظم وشكل مناسب للعرض داخل المنافذ."
+  },
+  {
+    "id": "عبوه-6-بلدي",
+    "name": "عبوة ٦ بلدي",
+    "group": "عبوة ٦",
+    "color": "بلدي",
+    "image": "assets/images/عبوه 6 بلدي.jpg",
+    "desc": "عبوة ٦ - بلدي بتغليف منظم وشكل مناسب للعرض داخل المنافذ."
+  },
+  {
+    "id": "عبوه-10-ابيض",
+    "name": "عبوة ١٠ أبيض",
+    "group": "عبوة ١٠",
+    "color": "أبيض",
+    "image": "assets/images/عبوه 10 ابيض.jpg",
+    "desc": "عبوة ١٠ - أبيض بتغليف منظم وشكل مناسب للعرض داخل المنافذ."
+  },
+  {
+    "id": "عبوه-10-احمر",
+    "name": "عبوة ١٠ أحمر",
+    "group": "عبوة ١٠",
+    "color": "أحمر",
+    "image": "assets/images/عبوه 10 احمر.jpg",
+    "desc": "عبوة ١٠ - أحمر بتغليف منظم وشكل مناسب للعرض داخل المنافذ."
+  },
+  {
+    "id": "عبوه-15-ابيض",
+    "name": "عبوة ١٥ أبيض",
+    "group": "عبوة ١٥",
+    "color": "أبيض",
+    "image": "assets/images/عبوه 15 ابيض.jpg",
+    "desc": "عبوة ١٥ - أبيض بتغليف منظم وشكل مناسب للعرض داخل المنافذ."
+  },
+  {
+    "id": "عبوه-15-بلدي",
+    "name": "عبوة ١٥ بلدي",
+    "group": "عبوة ١٥",
+    "color": "بلدي",
+    "image": "assets/images/عبوه 15 بلدي.jpg",
+    "desc": "عبوة ١٥ - بلدي بتغليف منظم وشكل مناسب للعرض داخل المنافذ."
+  },
+  {
+    "id": "عبوه-15احمر",
+    "name": "عبوة ١٥أحمر",
+    "group": "عبوة ١٥",
+    "color": "أحمر",
+    "image": "assets/images/عبوه 15احمر.jpg",
+    "desc": "عبوة ١٥ - أحمر بتغليف منظم وشكل مناسب للعرض داخل المنافذ."
+  },
+  {
+    "id": "عبوه-18-ابلدي",
+    "name": "عبوة ١٨ بلدي",
+    "group": "عبوة ١٨",
+    "color": "بلدي",
+    "image": "assets/images/عبوه 18 ابلدي.jpg",
+    "desc": "عبوة ١٨ - بلدي بتغليف منظم وشكل مناسب للعرض داخل المنافذ."
+  },
+  {
+    "id": "عبوه-18-ابيض",
+    "name": "عبوة ١٨ أبيض",
+    "group": "عبوة ١٨",
+    "color": "أبيض",
+    "image": "assets/images/عبوه 18 ابيض.jpg",
+    "desc": "عبوة ١٨ - أبيض بتغليف منظم وشكل مناسب للعرض داخل المنافذ."
+  },
+  {
+    "id": "عبوه-18-احمر",
+    "name": "عبوة ١٨ أحمر",
+    "group": "عبوة ١٨",
+    "color": "أحمر",
+    "image": "assets/images/عبوه 18 احمر.jpg",
+    "desc": "عبوة ١٨ - أحمر بتغليف منظم وشكل مناسب للعرض داخل المنافذ."
+  },
+  {
+    "id": "طبق-20-ابيض",
+    "name": "طبق ٢٠ أبيض",
+    "group": "طبق ٢٠",
+    "color": "أبيض",
+    "image": "assets/images/طبق 20 ابيض.jpg",
+    "desc": "طبق ٢٠ - أبيض بتغليف منظم وشكل مناسب للعرض داخل المنافذ."
+  },
+  {
+    "id": "طبق-20-احمر",
+    "name": "طبق ٢٠ أحمر",
+    "group": "طبق ٢٠",
+    "color": "أحمر",
+    "image": "assets/images/طبق 20 احمر.jpg",
+    "desc": "طبق ٢٠ - أحمر بتغليف منظم وشكل مناسب للعرض داخل المنافذ."
+  },
+  {
+    "id": "طبق-20-بلدي",
+    "name": "طبق ٢٠ بلدي",
+    "group": "طبق ٢٠",
+    "color": "بلدي",
+    "image": "assets/images/طبق 20 بلدي.jpg",
+    "desc": "طبق ٢٠ - بلدي بتغليف منظم وشكل مناسب للعرض داخل المنافذ."
+  },
+  {
+    "id": "طبق-30-ابيض",
+    "name": "طبق ٣٠ أبيض",
+    "group": "طبق ٣٠",
+    "color": "أبيض",
+    "image": "assets/images/طبق 30 ابيض.jpg",
+    "desc": "طبق ٣٠ - أبيض بتغليف منظم وشكل مناسب للعرض داخل المنافذ."
+  },
+  {
+    "id": "طبق-30-بلدي",
+    "name": "طبق ٣٠ بلدي",
+    "group": "طبق ٣٠",
+    "color": "بلدي",
+    "image": "assets/images/طبق 30 بلدي.jpg",
+    "desc": "طبق ٣٠ - بلدي بتغليف منظم وشكل مناسب للعرض داخل المنافذ."
+  },
+  {
+    "id": "طبق-30احمر",
+    "name": "طبق ٣٠أحمر",
+    "group": "طبق ٣٠",
+    "color": "أحمر",
+    "image": "assets/images/طبق 30احمر.jpg",
+    "desc": "طبق ٣٠ - أحمر بتغليف منظم وشكل مناسب للعرض داخل المنافذ."
+  },
+  {
+    "id": "عبوه-30-بلدي",
+    "name": "عبوة ٣٠ بلدي",
+    "group": "عبوة ٣٠",
+    "color": "بلدي",
+    "image": "assets/images/عبوه 30 بلدي.jpg",
+    "desc": "عبوة ٣٠ - بلدي بتغليف منظم وشكل مناسب للعرض داخل المنافذ."
+  },
+  {
+    "id": "عبوه-30ا-حمر",
+    "name": "عبوة ٣٠ أحمر",
+    "group": "عبوة ٣٠",
+    "color": "أحمر",
+    "image": "assets/images/عبوه 30ا حمر.jpg",
+    "desc": "عبوة ٣٠ - أحمر بتغليف منظم وشكل مناسب للعرض داخل المنافذ."
+  },
+  {
+    "id": "عبوه-بلاستيك-30-ابيض",
+    "name": "عبوة بلاستيك ٣٠ أبيض",
+    "group": "عبوة بلاستيك ٣٠",
+    "color": "أبيض",
+    "image": "assets/images/عبوه بلاستيك 30 ابيض.jpg",
+    "desc": "عبوة بلاستيك ٣٠ - أبيض بتغليف منظم وشكل مناسب للعرض داخل المنافذ."
+  }
+];
+
+const CLIENTS_DATA = [
   {
     "client": "امازون",
     "type": "amazon",
@@ -99,7 +262,8 @@ const LOCATIONS_DATA = [
         "area": "4766+5QQ Shubra El Kheima",
         "map": "https://maps.app.goo.gl/YyWUZ9EBB6LXNEtB7"
       }
-    ]
+    ],
+    "logo": "assets/images/امازون.jpeg"
   },
   {
     "client": "سوبيكو",
@@ -321,7 +485,8 @@ const LOCATIONS_DATA = [
         "area": "",
         "map": "https://maps.app.goo.gl/Q15Z3KTejEY1miGN9"
       }
-    ]
+    ],
+    "logo": "assets/images/سوبيكو.png"
   },
   {
     "client": "بانكيكس",
@@ -333,7 +498,8 @@ const LOCATIONS_DATA = [
         "area": "",
         "map": "https://maps.google.com/?q=29.967222,30.933388"
       }
-    ]
+    ],
+    "logo": "assets/images/بانكيكس.jpg"
   },
   {
     "client": "جودذ مارت",
@@ -345,7 +511,8 @@ const LOCATIONS_DATA = [
         "area": "",
         "map": "https://maps.app.goo.gl/9ZW9fjpwHfz6VDZy6?g_st=aw"
       }
-    ]
+    ],
+    "logo": "assets/images/جودذ.jpg"
   },
   {
     "client": "سوبر سنتر",
@@ -357,7 +524,8 @@ const LOCATIONS_DATA = [
         "area": "",
         "map": "https://maps.app.goo.gl/JySB1qusgonapvMX8?g_st=ic"
       }
-    ]
+    ],
+    "logo": "assets/images/سوبر سنتر.jpg"
   },
   {
     "client": "كارفور",
@@ -477,7 +645,8 @@ const LOCATIONS_DATA = [
         "area": "",
         "map": "https://share.google/dPdgaXdqTVrK0znwR"
       }
-    ]
+    ],
+    "logo": "assets/images/كارفور.png"
   },
   {
     "client": "سبينس",
@@ -591,7 +760,8 @@ const LOCATIONS_DATA = [
         "area": "",
         "map": "https://maps.apple/p/VQH1P1fLt_y.bV"
       }
-    ]
+    ],
+    "logo": "assets/images/سبينس.jpg"
   },
   {
     "client": "أوسكار",
@@ -627,7 +797,8 @@ const LOCATIONS_DATA = [
         "area": "",
         "map": "https://maps.app.goo.gl/cZ3Ko98UuaZRHnes8?g_st=aw"
       }
-    ]
+    ],
+    "logo": "assets/images/اوسكار.jpg"
   },
   {
     "client": "محمود الفار",
@@ -693,7 +864,8 @@ const LOCATIONS_DATA = [
         "area": "",
         "map": "https://share.google/U65CAZWMx2Pl6k9OB "
       }
-    ]
+    ],
+    "logo": "assets/images/الفار.jpg"
   },
   {
     "client": "بندة سوبر",
@@ -729,7 +901,8 @@ const LOCATIONS_DATA = [
         "area": "",
         "map": "https://share.google/s1pS2lnHndsfcmPQ2 "
       }
-    ]
+    ],
+    "logo": "assets/images/سوبر سنتر.jpg"
   },
   {
     "client": "أولاد رجب",
@@ -771,7 +944,8 @@ const LOCATIONS_DATA = [
         "area": "",
         "map": "https://maps.app.goo.gl/sbrHDQ2Qbmbp9Vg38?g_st=aw"
       }
-    ]
+    ],
+    "logo": "assets/images/اولاد رجب.png"
   },
   {
     "client": "اللولو هايبر ماركت",
@@ -801,7 +975,8 @@ const LOCATIONS_DATA = [
         "area": "",
         "map": "https://maps.app.goo.gl/LbTGbUFsDtwSEamo8?g_st=ic"
       }
-    ]
+    ],
+    "logo": "assets/images/لولو.jpg"
   },
   {
     "client": "جيان ماركت",
@@ -819,7 +994,8 @@ const LOCATIONS_DATA = [
         "area": "",
         "map": "https://share.google/23eY3ZA5N9gp1sdil "
       }
-    ]
+    ],
+    "logo": "assets/images/جيان.jpg"
   },
   {
     "client": "زهران ماركت",
@@ -891,7 +1067,8 @@ const LOCATIONS_DATA = [
         "area": "",
         "map": "https://maps.app.goo.gl/r4eTXfb4dkJvtYyY6?g_st=aw "
       }
-    ]
+    ],
+    "logo": "assets/images/زهران ماركت.jpg"
   },
   {
     "client": "فندق راديسون",
@@ -903,7 +1080,8 @@ const LOCATIONS_DATA = [
         "area": "",
         "map": "https://share.google/le5U9HbePBsXhoJtl"
       }
-    ]
+    ],
+    "logo": "assets/images/Screenshot 2025-07-03 192620.png"
   },
   {
     "client": "وكالة المنصورة",
@@ -945,50 +1123,7 @@ const LOCATIONS_DATA = [
         "area": "",
         "map": "https://share.google/Zd2aBix9ZseUeN5fW"
       }
-    ]
-  }
-];
-const PRODUCTS_DATA = [
-  {
-    "name": "عبوة ٦",
-    "type": "أبيض / أحمر / بلدي",
-    "image": "assets/images/عبوه 6 ابيض.jpg",
-    "desc": "عبوة صغيرة مناسبة للاستخدام اليومي والمنافذ السريعة."
-  },
-  {
-    "name": "عبوة ١٠",
-    "type": "أبيض / أحمر",
-    "image": "assets/images/عبوه 10 ابيض.jpg",
-    "desc": "مقاس عملي للسوبر ماركت والعائلات الصغيرة."
-  },
-  {
-    "name": "عبوة ١٥",
-    "type": "أبيض / أحمر / بلدي",
-    "image": "assets/images/عبوه 15 ابيض.jpg",
-    "desc": "توازن ممتاز بين السعر والحجم والعرض."
-  },
-  {
-    "name": "عبوة ١٨",
-    "type": "أبيض / أحمر / بلدي",
-    "image": "assets/images/عبوه 18 ابيض.jpg",
-    "desc": "مناسبة للسلاسل والمنافذ متوسطة الحركة."
-  },
-  {
-    "name": "طبق ٢٠",
-    "type": "أبيض / أحمر / بلدي",
-    "image": "assets/images/طبق 20 ابيض.jpg",
-    "desc": "طبق كرتون منظم وواضح للعرض التجاري."
-  },
-  {
-    "name": "طبق ٣٠",
-    "type": "أبيض / أحمر / بلدي",
-    "image": "assets/images/طبق 30 ابيض.jpg",
-    "desc": "المنتج الأكثر حضورًا للعروض والهايبر ماركت."
-  },
-  {
-    "name": "عبوة ٣٠ بلاستيك",
-    "type": "Premium Pack",
-    "image": "assets/images/عبوه بلاستيك 30 ابيض.jpg",
-    "desc": "تغليف قوي ومظهر راقٍ لعرض أفضل."
+    ],
+    "logo": "assets/images/وكاله المنصوره.jpg"
   }
 ];
