@@ -22,3 +22,22 @@ const th=localStorage.getItem("oval_theme_publish")||"dark";document.documentEle
 const backTop=$("#backTop");if(backTop){window.addEventListener("scroll",()=>backTop.classList.toggle("show",window.scrollY>520));backTop.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}))}
 function reveal(){const obs=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add("show");obs.unobserve(en.target)}}),{threshold:.12});document.querySelectorAll(".reveal").forEach(el=>obs.observe(el))}
 renderProductChips();renderProducts();renderClients();buildLocationFilters();renderLocations();reveal();
+
+
+// ===== Mobile Navbar Fix =====
+const mobileMenuToggle = document.getElementById("mobileMenuToggle");
+if (mobileMenuToggle) {
+  mobileMenuToggle.addEventListener("click", () => {
+    const header = document.querySelector(".site-header");
+    header.classList.toggle("nav-open");
+    mobileMenuToggle.textContent = header.classList.contains("nav-open") ? "×" : "☰";
+  });
+
+  document.querySelectorAll(".main-nav a").forEach(link => {
+    link.addEventListener("click", () => {
+      const header = document.querySelector(".site-header");
+      header.classList.remove("nav-open");
+      mobileMenuToggle.textContent = "☰";
+    });
+  });
+}
